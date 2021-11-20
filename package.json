@@ -1,0 +1,44 @@
+{
+  "main": "index.js",
+  "scripts": {
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "start": "react-native start"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.4.17",
+    "@expo-google-fonts/roboto": "^0.2.0",
+    "expo": "^43.0.3",
+    "expo-cli": "^4.13.0",
+    "expo-splash-screen": "~0.13.5",
+    "expo-status-bar": "~1.1.0",
+    "expo-updates": "~0.10.13",
+    "graphql": "^16.0.1",
+    "moment": "^2.29.1",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-native": "0.64.3",
+    "react-native-datepicker": "^1.7.2",
+    "react-native-elements": "^3.4.2",
+    "react-native-gesture-handler": "~1.10.2",
+    "react-native-material-selectize": "^1.18.0",
+    "react-native-modal": "^13.0.0",
+    "react-native-neat-date-picker": "^1.1.2",
+    "react-native-paper": "^4.10.0",
+    "react-native-reanimated": "~2.2.0",
+    "react-native-router-flux": "^4.3.1",
+    "react-native-safe-area-context": "3.3.2",
+    "react-native-screens": "~3.8.0",
+    "react-native-svg": "^12.1.1",
+    "react-native-web": "0.17.1",
+    "react-redux": "^7.2.6",
+    "redux": "^4.1.2",
+    "expo-google-app-auth": "~9.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "react-native-svg-transformer": "^0.14.3"
+  },
+  "private": true
+}
