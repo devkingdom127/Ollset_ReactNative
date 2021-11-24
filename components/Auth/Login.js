@@ -12,7 +12,9 @@ const Login = (props) => {
    const [submit, setSubmit] = React.useState(false);
    const [email, setEmail] = React.useState('');
    const [password, setPassword] = React.useState('');
+   const [passwordVal, setPasswordVal] = React.useState(true);
    const [eye, setEye] = React.useState(true);
+   const [error, setError] = React.useState(false);
    const goToRegister = () => {
       Actions.register1()
    }
@@ -21,15 +23,27 @@ const Login = (props) => {
    }
    const onPressLogin =() =>{
       setSubmit(true);
-      if(email!="" && password!=""){
+      if(email!="" && password!=""&&passwordVal){
          authService.login(email, password).then((response) => {
             props.loginUser(response.data.createLogin);
             Actions.invite()
          }).catch((err) => {
-            Alert.alert("Error! Please try again.")
+            setError(true);
          });
       }
    }
+   const passwordCheck = () =>{
+      let lowerCaseLetters = /[a-z]/g;
+      let upperCaseLetters = /[A-Z]/g;
+      let numbers = /[0-9]/g;
+      var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+      if(password.match(lowerCaseLetters)&&password.match(upperCaseLetters)&&password.match(numbers)&&password.length >= 8&&format.test(password)){
+          setPasswordVal(true)
+      }
+      else{
+          setPasswordVal(false);
+      }
+  }
 
    return (
       <ScrollView style = {styles.whole}>
@@ -37,6 +51,7 @@ const Login = (props) => {
             <Header />
             <View style={styles.login_input}>
                <Text style={styles.login_head}>Login</Text>
+               <Text style={error?styles.errorMessage:styles.errorHidden}>Oops, there was a problem! Please check your Authentication information.</Text>
                <TextInput
                   label="Phone No / E-mail or username"
                   style={email=="" && submit? styles.email_error:styles.email}
@@ -54,8 +69,8 @@ const Login = (props) => {
                   selectionColor='#4FB0F5'
                   secureTextEntry={eye?true:false}
                   onChangeText={password => setPassword(password)}
+                  onBlur={passwordCheck}
                />
-               <Text style={styles.error}>{password=="" && submit? "Please enter Password!":""}</Text>
                <TouchableOpacity
                   onPress={()=>setEye(!eye)}
                   style={styles.touch}
@@ -71,6 +86,7 @@ const Login = (props) => {
                      />
                   }
                </TouchableOpacity>
+               <Text style={styles.error1}>{password=="" && submit? "Please enter Password!":!passwordVal?"Password should have minimum 8 characters, 1 upper case, 1 lower case, 1 special character and 1 number":""}</Text>
                <TouchableOpacity style = {styles.forgotPass} onPress = {goToReset}>
                   <Text style={styles.forgot} >Forgot password?</Text>
                </TouchableOpacity>
@@ -223,6 +239,10 @@ const styles = StyleSheet.create ({
    error: {
       color: "red"
    },
+   error1: {
+      color: "red",
+      marginTop: -48
+   },
    line: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -268,8 +288,20 @@ const styles = StyleSheet.create ({
        width: 50,
        alignSelf: 'flex-end',
        position: "relative",
-       top: -50
+       top: -30
    },
+   errorMessage: {
+      marginTop: 24,
+      fontSize: 18,
+      fontWeight: "700",
+      color: "#fff",
+      backgroundColor: "#ff96aa",
+      padding: 5,
+      borderRadius: 7
+   },
+   errorHidden: {
+      display: "none"
+   }
 })
 
 const mapStateToProps = state => ({

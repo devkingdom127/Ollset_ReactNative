@@ -12,16 +12,18 @@ const Update = (props) => {
    const authService = new AuthenticationService();
    const [submit, setSubmit] = React.useState(false);
    const [email, setEmail] = React.useState('');
+   const [emailVal, setEmailVal] = React.useState(true);
+   const [phoneVal, setPhoneVal] = React.useState(true);
    const [password, setPassword] = React.useState('');
+   const [passwordVal, setPasswordVal] = React.useState(true);
    const [eye, setEye] = React.useState(true);
    const goToUpdate = () => {
       setSubmit(true);
-      if(email!=""&&password!=""){
+      if(email!=""&&password!=""&&passwordVal&&emailVal&&phoneVal){
          authService.updatePassword(email, passcode, password).then((response) => {
             console.log(response);
             if(response.data.createAccountResetPassword.isSuccess){
-               Alert.alert("Success! After a few seconds you will be taken to the login page.");
-               setTimeout(function(){Actions.login()}, 4000);
+               Actions.updateSuccess() 
             }else{
                Alert.alert("Error! "+response.data.createAccountResetPassword.reason);
             }
@@ -30,6 +32,60 @@ const Update = (props) => {
 			});
       }
    }
+
+   const validate=(email)=>{
+      console.log(email);
+      let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      let pattern = new RegExp(/^[0-9\b]+$/);
+      if(email==""){
+          setPhoneVal(true);
+          setEmailVal(true);
+          setEmail( email );
+      }
+      else if(email!=""&&isNaN(email)){
+          setPhoneVal(true);
+          if (reg.test(email) === false) {
+              console.log("Email is Not Correct");
+              setEmail( email );
+              setEmailVal(false);
+          }
+          else {
+              setEmail( email );
+              setEmailVal(true);
+              console.log("Email is Correct");
+          }
+      }
+      else{
+          setEmailVal(true);
+          if(!pattern.test(email)){
+              setEmail( email );
+              setPhoneVal(false);
+          }
+          else if(email.length!=10){
+              setEmail( email );
+              setPhoneVal(false);
+          }
+          else {
+              setEmail( email );
+              setPhoneVal(true);
+              console.log("setPhoneVal is Correct");
+          }
+      }
+  }
+
+   const passwordCheck = () =>{
+      let lowerCaseLetters = /[a-z]/g;
+      let upperCaseLetters = /[A-Z]/g;
+      let numbers = /[0-9]/g;
+      var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+      if(password.match(lowerCaseLetters)&&password.match(upperCaseLetters)&&password.match(numbers)&&password.length >= 8&&format.test(password)){
+          setPasswordVal(true)
+      }
+      else{
+          setPasswordVal(false);
+      }
+  }
+
    return (
       <ScrollView style = {styles.whole}>
          <View style = {styles.password_main}>
@@ -42,9 +98,9 @@ const Update = (props) => {
                   value={email}
                   underlineColor="#fff"
                   selectionColor='#4FB0F5'
-                  onChangeText={email => setEmail(email)}
+                  onChangeText={(email) => validate(email)}
                />
-               <Text style={styles.error}>{email=="" && submit? "Please enter Email or Phone Number!":""}</Text>
+               <Text style={styles.error}>{email=="" && submit? "Please enter Email or Phone Number!":!emailVal?"Email is Not Correct":!phoneVal?"Phone Number is Not Correct.":""}</Text>
                <TextInput
                   label="New Password"
                   style={password=="" && submit?styles.password_error:styles.password}
@@ -53,8 +109,8 @@ const Update = (props) => {
                   selectionColor='#4FB0F5'
                   secureTextEntry={eye?true:false}
                   onChangeText={password => setPassword(password)}
+                  onBlur={passwordCheck}
                />
-               <Text style={styles.error}>{password=="" && submit? "Please enter New Password!":""}</Text>
                <TouchableOpacity
                   onPress={()=>setEye(!eye)}
                   style={styles.touch}
@@ -70,6 +126,7 @@ const Update = (props) => {
                      />
                   }
                </TouchableOpacity>
+               <Text style={styles.error1}>{password=="" && submit? "Please enter New Password!":!passwordVal?"Password should have minimum 8 characters, 1 upper case, 1 lower case, 1 special character and 1 number":""}</Text>
                <TouchableOpacity
                   style={styles.passwordbtn}
                   onPress={goToUpdate}
@@ -161,7 +218,8 @@ const styles = StyleSheet.create ({
        height: 12,
        alignSelf: 'flex-end',
        position: "relative",
-       right: 18
+       right: 18,
+       top: 20
    },
    touch:{
        height:50,
@@ -172,6 +230,10 @@ const styles = StyleSheet.create ({
    },
    error: {
       color: "red"
+   },
+   error1: {
+      color: "red",
+      top: -48
    }
 })
 

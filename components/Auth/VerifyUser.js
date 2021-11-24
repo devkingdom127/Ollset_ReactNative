@@ -1,5 +1,5 @@
-import  * as React from 'react'
-import { TouchableOpacity, Text, StyleSheet, View, Alert,ScrollView } from 'react-native'
+import  React, {useRef} from 'react'
+import { TouchableOpacity, Text, StyleSheet, View, Alert,ScrollView, RefreshControl } from 'react-native'
 import Header from './header'
 import { Actions } from 'react-native-router-flux';
 import { TextInput } from 'react-native-paper';
@@ -18,7 +18,7 @@ const VerifyUser = (props) => {
    const [code5, setCode5] = React.useState('');
    const [code6, setCode6] = React.useState('');
    const [code, setCode] = React.useState('');
-   
+   const secondInput = useRef();
    const goToVerify= ()=>{
       setSubmit(true);
       if(code1!=""&&code2!=""&&code3!=""&&code4!=""&&code5!=""&&code6!=""){
@@ -33,8 +33,7 @@ const VerifyUser = (props) => {
             "verificationCode":code
          }
          authService.registerUser(user).then((response) => {
-            Alert.alert("Success! After a few seconds you will be taken to the login page.");
-            setTimeout(function(){Actions.login()}, 4000);            
+            Actions.registerSuccess()            
          }).catch((err) => {
             console.log(err);
             Alert.alert("Error! Please check your verification code.");
@@ -43,6 +42,10 @@ const VerifyUser = (props) => {
    }
    const codeInsert=()=>{
       setCode(code1+code2+code3+code4+code5+code6);
+   }
+   const select = (code)=>{
+      setCode1(code);
+
    }
 
    return (
@@ -58,16 +61,29 @@ const VerifyUser = (props) => {
                      maxLength={1}
                      selectionColor='#4FB0F5'
                      value={code1}
-                     onChangeText={code1 => setCode1(code1)}
-                     onBlur={codeInsert}
+                     onChangeText={code1 =>{ 
+                        setCode1(code1)
+                        if(code1!=""){
+                           secondInput.current.focus();
+                        }
+                     }}
+                     // autoFocus={true}
+                     // onBlur={codeInsert}
                   />
                   <TextInput
                      style={(code1==""||code2==""||code3==""||code4==""||code5==""||code6=="")&&submit? styles.split_input_error:styles.split_input}
                      maxLength={1}
                      selectionColor='#4FB0F5'
                      value={code2}
-                     onChangeText={code2 => setCode2(code2)}
-                     onBlur={codeInsert}
+                     onFocus={()=>Alert.alert('OK')}
+                     ref={secondInput}
+                     onChangeText={code2 => {
+                        setCode2(code2)
+                        // if(code2!=""){
+                        //    input_1.current.focus();
+                        // }
+                     }}
+                     // onBlur={codeInsert}
                   />
                   <TextInput
                      style={(code1==""||code2==""||code3==""||code4==""||code5==""||code6=="")&&submit? styles.split_input_error:styles.split_input}

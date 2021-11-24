@@ -18,6 +18,7 @@ const Register2 = (props) => {
    const [Lname, setLname] = React.useState('');
    const [dob, setDob] = React.useState('');
    const [Uname, setUname] = React.useState('');
+   const [UnameCheck, setUnameCheck] = React.useState(true);
    const [ageMe, setAgeMe] = React.useState(0);
    const [dobVal, setDobVal] = React.useState(true);
    const [month, setMonth] = React.useState(true);
@@ -25,7 +26,7 @@ const Register2 = (props) => {
    const goToVerify = () => {
       setSubmit(true);
       if(Fname!=""&&Lname!=""&&dob!=""&&Uname!=""){
-         if(ageMe>13 && month){
+         if(ageMe>13 && month && UnameCheck){
             setDobVal(true);
             authService.getVerificationCode(user1.user1.email, Fname).then((res) => {
                console.log(res);
@@ -74,7 +75,6 @@ const Register2 = (props) => {
   
     const onConfirm = ( date ) => {
       setShowDatePicker(false);
-      console.log(date);
       let bith=parseInt(date.getMonth()+1) + "/"+ date.getDate() +"/"+date.getFullYear();
       setDob(bith);
       let d = new Date();
@@ -87,6 +87,27 @@ const Register2 = (props) => {
       else{
          setDobVal(true);
       }
+      const myArray = dob.split("/");
+      console.log(myArray[0]);
+      if((date.getMonth()+1)>=1 && (date.getMonth()+1)<=12 && date.getDate()>=1 && date.getDate()<=31){
+         setMonth(true)
+      }
+      else{
+         setMonth(false)
+      }
+    }
+    const usernameCheck = () =>{
+      authService.userAvailable(Uname).then((res) => {
+         if(res.data.checkUserName.isAvailable){
+            setUnameCheck(true);
+         }
+         else{
+            setUnameCheck(false);
+         }
+      }).catch((err) => {
+         setUnameCheck(false);
+         Alert.alert("Invalide User data! Please check again your Username.")
+      });
     }
 
    return (
@@ -123,7 +144,7 @@ const Register2 = (props) => {
                   onChangeText={dob => ageCheck(dob)}
                   onBlur={checkBirth}
                />
-               <Text style={styles.error}>{dob=="" && submit? "Please enter your date of birth.":!dobVal?"You must be at least 13 years old.":!month?"Invalid Date":""}</Text>
+               <Text style={styles.error}>{dob=="" && submit? "Please enter your date of birth.":!dobVal?"Age must be at least 13 years":!month?"Invalid Date":""}</Text>
                <View>
                   <DatePicker
                   isVisible={showDatePicker}
@@ -148,8 +169,9 @@ const Register2 = (props) => {
                   underlineColor="#fff"
                   selectionColor='#4FB0F5'
                   onChangeText={Uname => setUname(Uname)}
+                  onBlur={usernameCheck}
                />
-               <Text style={styles.error}>{Uname=="" && submit? "Please enter your username.":""}</Text>
+               <Text style={styles.error}>{Uname=="" && submit? "Please enter your username.":Uname!=""&&!UnameCheck?"Invalid Username":""}</Text>
                <TouchableOpacity
                   style={styles.registerbtn}
                   onPress={goToVerify}

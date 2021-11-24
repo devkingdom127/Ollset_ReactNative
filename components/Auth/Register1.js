@@ -66,24 +66,11 @@ const Register1 = (props) => {
         }
     }
     const passwordCheck = () =>{
-        setPasswordVal(true);
         let lowerCaseLetters = /[a-z]/g;
         let upperCaseLetters = /[A-Z]/g;
         let numbers = /[0-9]/g;
         var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
-        if(password.match(lowerCaseLetters)){
-            setPasswordVal(true)
-        }
-        if(password.match(upperCaseLetters)){
-            setPasswordVal(true)
-        }
-        if(password.match(numbers)){
-            setPasswordVal(true)
-        }
-        if(password.length >= 8){
-            setPasswordVal(true)
-        }
-        if(format.test(password)){
+        if(password.match(lowerCaseLetters)&&password.match(upperCaseLetters)&&password.match(numbers)&&password.length >= 8&&format.test(password)){
             setPasswordVal(true)
         }
         else{
@@ -116,10 +103,9 @@ const Register1 = (props) => {
                   onChangeText={password => setPassword(password)}
                   onBlur={passwordCheck}
                />
-               <Text style={styles.error}>{password=="" && submit? "Please enter your password.":!passwordVal?"Password should have minimum 8 characters, 1 upper case, 1 lower case, 1 special character and 1 number":""}</Text>
                <TouchableOpacity
                   onPress={()=>setEye(!eye)}
-                  style={!passwordVal&&password!=""?styles.touch_error:styles.touch}
+                  style={styles.touch}
                >
                   {eye?
                      <Image 
@@ -132,6 +118,7 @@ const Register1 = (props) => {
                      />
                   }
                </TouchableOpacity>
+               <Text style={styles.error1}>{password=="" && submit? "Please enter your password.":!passwordVal?"Password should have minimum 8 characters, 1 upper case, 1 lower case, 1 special character and 1 number":""}</Text>
                <View style={styles.agree}>
                     <Text style={styles.agree_letter}>
                         By clicking Agree & Create account, you agree to the Ollset User &#x2007;
@@ -287,7 +274,8 @@ const styles = StyleSheet.create ({
         height: 12,
         alignSelf: 'flex-end',
         position: "relative",
-        right: 18
+        right: 18,
+        top: 20
     },
     touch:{
         height:50,
@@ -296,15 +284,12 @@ const styles = StyleSheet.create ({
         position: "relative",
         top: -50
     },
-    touch_error:{
-        height:50,
-        width: 50,
-        alignSelf: 'flex-end',
-        position: "relative",
-        top: -63
-    },
     error: {
         color: "red"
+    },
+    error1: {
+        color: "red",
+        top: -48
     }
 })
 
