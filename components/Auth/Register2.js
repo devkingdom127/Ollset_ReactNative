@@ -7,6 +7,7 @@ import DatePicker from 'react-native-neat-date-picker';
 import { connect } from 'react-redux';
 import { userData2 } from '../../actions/userdata2';
 import { AuthenticationService } from "../server/auth.service";
+import { maybe } from '@apollo/client/utilities';
 
 const Register2 = (props) => {
    const user1 = props.user1;
@@ -17,17 +18,50 @@ const Register2 = (props) => {
    const [Lname, setLname] = React.useState('');
    const [dob, setDob] = React.useState('');
    const [Uname, setUname] = React.useState('');
+   const [ageMe, setAgeMe] = React.useState(0);
+   const [dobVal, setDobVal] = React.useState(true);
+   const [month, setMonth] = React.useState(true);
    const [showDatePicker, setShowDatePicker] = React.useState(false);
    const goToVerify = () => {
       setSubmit(true);
       if(Fname!=""&&Lname!=""&&dob!=""&&Uname!=""){
-         authService.getVerificationCode(user1.user1.email, Fname).then((res) => {
-            console.log(res);
-            props.userSave({"firstname":Fname, "lastname":Lname, "dob":dob, "username":Uname});
-            Actions.verify()
-         }).catch((err) => {
-            Alert.alert("Invalide User data! Please check again your email or phone number.")
-         });
+         if(ageMe>13 && month){
+            setDobVal(true);
+            authService.getVerificationCode(user1.user1.email, Fname).then((res) => {
+               console.log(res);
+               props.userSave({"firstname":Fname, "lastname":Lname, "dob":dob, "username":Uname});
+               Actions.verify()
+            }).catch((err) => {
+               Alert.alert("Invalide User data! Please check again your email or phone number.")
+            });
+         }else{
+            setDobVal(false);
+         }
+      }
+   }
+   const ageCheck = (age)=>{
+      setDob(age);
+      setMonth(true);
+      let d = new Date();
+      let agelen = age.length;
+      let ageCh = age.slice(agelen-4, agelen);
+      let ddd = d.getFullYear() - ageCh;
+      setAgeMe(ddd);
+      if(ddd<13){
+         setDobVal(false);
+      }
+      else{
+         setDobVal(true);
+      }   
+   }
+   const checkBirth = () =>{
+      const myArray = dob.split("/");
+      console.log(myArray[0]);
+      if(myArray[0]>=1 && myArray[0]<=12 && myArray[1]>=1 && myArray[1]<=31){
+         setMonth(true)
+      }
+      else{
+         setMonth(false)
       }
    }
    const openDatePicker = () => {
@@ -40,8 +74,19 @@ const Register2 = (props) => {
   
     const onConfirm = ( date ) => {
       setShowDatePicker(false);
+      console.log(date);
       let bith=parseInt(date.getMonth()+1) + "/"+ date.getDate() +"/"+date.getFullYear();
       setDob(bith);
+      let d = new Date();
+      console.log(d)
+      let dd = d.getFullYear() - date.getFullYear();
+      setAgeMe(dd);
+      if(dd<13){
+         setDobVal(false);
+      }
+      else{
+         setDobVal(true);
+      }
     }
 
    return (
@@ -75,9 +120,10 @@ const Register2 = (props) => {
                   value={dob}
                   underlineColor="#fff"
                   selectionColor='#4FB0F5'
-                  onChangeText={dob => setDob(dob)}
+                  onChangeText={dob => ageCheck(dob)}
+                  onBlur={checkBirth}
                />
-               <Text style={styles.error}>{dob=="" && submit? "Please enter your date of birth.":""}</Text>
+               <Text style={styles.error}>{dob=="" && submit? "Please enter your date of birth.":!dobVal?"You must be at least 13 years old.":!month?"Invalid Date":""}</Text>
                <View>
                   <DatePicker
                   isVisible={showDatePicker}

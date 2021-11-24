@@ -6,15 +6,13 @@ import { TextInput } from 'react-native-paper';
 import { AuthenticationService } from "../server/auth.service";
 import { connect } from 'react-redux';
 import { saveUser } from '../../actions/save';
-import * as Google from "expo-google-app-auth";
 
 const Login = (props) => {
    const authService = new AuthenticationService();
    const [submit, setSubmit] = React.useState(false);
    const [email, setEmail] = React.useState('');
-   const [emailVal, setEmailVal] = React.useState(true);
-   const [phoneVal, setPhoneVal] = React.useState(true);
    const [password, setPassword] = React.useState('');
+   const [eye, setEye] = React.useState(true);
    const goToRegister = () => {
       Actions.register1()
    }
@@ -23,7 +21,7 @@ const Login = (props) => {
    }
    const onPressLogin =() =>{
       setSubmit(true);
-      if(email!="" && password!=""&&emailVal&&phoneVal){
+      if(email!="" && password!=""){
          authService.login(email, password).then((response) => {
             props.loginUser(response.data.createLogin);
             Actions.invite()
@@ -32,74 +30,6 @@ const Login = (props) => {
          });
       }
    }
-   const validate=(email)=>{
-      console.log(email);
-      let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-      let pattern = new RegExp(/^[0-9\b]+$/);
-      if(email==""){
-          setPhoneVal(true);
-          setEmailVal(true);
-          setEmail( email );
-      }
-      else if(email!=""&&isNaN(email)){
-          setPhoneVal(true);
-          if (reg.test(email) === false) {
-              console.log("Email is Not Correct");
-              setEmail( email );
-              setEmailVal(false);
-          }
-          else {
-              setEmail( email );
-              setEmailVal(true);
-              console.log("Email is Correct");
-          }
-      }
-      else{
-          setEmailVal(true);
-          if(!pattern.test(email)){
-              setEmail( email );
-              setPhoneVal(false);
-          }
-          else if(email.length!=10){
-              setEmail( email );
-              setPhoneVal(false);
-          }
-          else {
-              setEmail( email );
-              setPhoneVal(true);
-              console.log("setPhoneVal is Correct");
-          }
-      }
-   }
-
-   const signInAsync = async () => {
-      console.log("LoginScreen.js 6 | loggin in");
-      try {
-        const { type, user } = await Google.logInAsync({
-
-         //  iosClientId: `<YOUR_IOS_CLIENT_ID>`,
-          androidClientId: `866541219983-fqi0i766olvioqgeb71elgsds41nijus.apps.googleusercontent.com`,
-          redirectUrl: 'com.ollset:/Login',
-          scopes: [
-            'openid',
-            'profile'
-          ],
-        }).then(           
-           console.log(user)
-        );
-
-        Alert.alert(type);
-  
-        if (type === "success") {
-          // Then you can use the Google REST API
-          console.log("LoginScreen.js 17 | success, navigating to profile");
-          Actions.register1()
-         //  navigation.navigate("Profile", { user });
-        }
-      } catch (error) {
-        console.log("LoginScreen.js 19 | error with login", error);
-      }
-   };
 
    return (
       <ScrollView style = {styles.whole}>
@@ -113,19 +43,34 @@ const Login = (props) => {
                   value={email}
                   underlineColor="#fff"
                   selectionColor='#4FB0F5'
-                  onChangeText={(email) => validate(email)}
+                  onChangeText={(email) => setEmail(email)}
                />
-               <Text style={styles.error}>{email=="" && submit? "Please enter your email address or mobile number.":!emailVal?"Email is Not Correct":!phoneVal?"Phone Number is Not Correct.":""}</Text>
+               <Text style={styles.error}>{email=="" && submit? "Please enter your mobile number/E-mail or username.":""}</Text>
                <TextInput
                   label="Password"
                   style={password=="" && submit? styles.password_error:styles.password}
                   value={password}
                   underlineColor="#fff"
                   selectionColor='#4FB0F5'
-                  secureTextEntry={true}
+                  secureTextEntry={eye?true:false}
                   onChangeText={password => setPassword(password)}
                />
                <Text style={styles.error}>{password=="" && submit? "Please enter Password!":""}</Text>
+               <TouchableOpacity
+                  onPress={()=>setEye(!eye)}
+                  style={styles.touch}
+               >
+                  {eye?
+                     <Image 
+                        style={styles.eye}
+                        source={require('../../images/eye.png')}
+                     />:
+                     <Image 
+                        style={styles.eye}
+                        source={require('../../images/uneye.png')}
+                     />
+                  }
+               </TouchableOpacity>
                <TouchableOpacity style = {styles.forgotPass} onPress = {goToReset}>
                   <Text style={styles.forgot} >Forgot password?</Text>
                </TouchableOpacity>
@@ -142,10 +87,9 @@ const Login = (props) => {
                </View>
                <TouchableOpacity
                   style={styles.loginSocial}
-                  onPress={signInAsync}
                >
-                  <Image source={require('../../images/google.png')} style={styles.google}/>
-                  <Text style={styles.socialButton}>Continue with Google</Text>
+                  <Image source={require('../../images/twitter.png')} style={styles.google}/>
+                  <Text style={styles.socialButton}>Continue with Twitter</Text>
                </TouchableOpacity>
                <TouchableOpacity
                   style={styles.loginSocial}
@@ -225,9 +169,12 @@ const styles = StyleSheet.create ({
       marginTop: 5,
       height: 48
    },
-   forgot: {
+   forgotPass: {
+      width: 120,
       alignSelf: 'flex-end',
       alignItems: 'flex-end',
+   },
+   forgot: {
       marginTop: -3,
       color: "#4FB0F5"
    },
@@ -308,7 +255,21 @@ const styles = StyleSheet.create ({
       width: 20,
       height: 20,
       marginLeft: "21%"
-   }
+   },
+   eye: {
+       width: 16,
+       height: 12,
+       alignSelf: 'flex-end',
+       position: "relative",
+       right: 18
+   },
+   touch:{
+       height:50,
+       width: 50,
+       alignSelf: 'flex-end',
+       position: "relative",
+       top: -50
+   },
 })
 
 const mapStateToProps = state => ({

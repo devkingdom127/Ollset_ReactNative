@@ -1,5 +1,5 @@
 import  * as React from 'react'
-import { TouchableOpacity, Text, StyleSheet, View, Alert,ScrollView } from 'react-native'
+import { TouchableOpacity, Text, StyleSheet, View, Alert,ScrollView, Image } from 'react-native'
 import Header from './header'
 import { Actions } from 'react-native-router-flux'
 import { TextInput } from 'react-native-paper';
@@ -13,6 +13,7 @@ const Update = (props) => {
    const [submit, setSubmit] = React.useState(false);
    const [email, setEmail] = React.useState('');
    const [password, setPassword] = React.useState('');
+   const [eye, setEye] = React.useState(true);
    const goToUpdate = () => {
       setSubmit(true);
       if(email!=""&&password!=""){
@@ -50,9 +51,25 @@ const Update = (props) => {
                   value={password}
                   underlineColor="#fff"
                   selectionColor='#4FB0F5'
+                  secureTextEntry={eye?true:false}
                   onChangeText={password => setPassword(password)}
                />
                <Text style={styles.error}>{password=="" && submit? "Please enter New Password!":""}</Text>
+               <TouchableOpacity
+                  onPress={()=>setEye(!eye)}
+                  style={styles.touch}
+               >
+                  {eye?
+                     <Image 
+                        style={styles.eye}
+                        source={require('../../images/eye.png')}
+                     />:
+                     <Image 
+                        style={styles.eye}
+                        source={require('../../images/uneye.png')}
+                     />
+                  }
+               </TouchableOpacity>
                <TouchableOpacity
                   style={styles.passwordbtn}
                   onPress={goToUpdate}
@@ -127,7 +144,7 @@ const styles = StyleSheet.create ({
       height: 48
  },
    passwordbtn: {
-      marginTop:5,
+      marginTop:-24,
       height: 48,
       alignItems: "center",
       backgroundColor: "#4FB0F5",
@@ -138,6 +155,20 @@ const styles = StyleSheet.create ({
       color: "#ffffff",
       fontSize: 14,
       fontWeight: "700"
+   },
+   eye: {
+       width: 16,
+       height: 12,
+       alignSelf: 'flex-end',
+       position: "relative",
+       right: 18
+   },
+   touch:{
+       height:50,
+       width: 50,
+       alignSelf: 'flex-end',
+       position: "relative",
+       top: -50
    },
    error: {
       color: "red"

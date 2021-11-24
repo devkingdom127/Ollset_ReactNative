@@ -14,13 +14,14 @@ const Register1 = (props) => {
     const [emailVal, setEmailVal] = React.useState(true);
     const [phoneVal, setPhoneVal] = React.useState(true);
     const [password, setPassword] = React.useState('');
+    const [passwordVal, setPasswordVal] = React.useState(true);
     const [eye, setEye] = React.useState(true);
     const goToLogin = () => {
         Actions.login()
     }
     const goToRegister2 = () => {
         setSubmit(true);
-        if(email!=""&&password!=""&&emailVal&&phoneVal){
+        if(email!=""&&password!=""&&emailVal&&phoneVal&&passwordVal){
             props.userSave({"email":email, "password":password});
             Actions.register2()
         }
@@ -64,6 +65,31 @@ const Register1 = (props) => {
             }
         }
     }
+    const passwordCheck = () =>{
+        setPasswordVal(true);
+        let lowerCaseLetters = /[a-z]/g;
+        let upperCaseLetters = /[A-Z]/g;
+        let numbers = /[0-9]/g;
+        var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+        if(password.match(lowerCaseLetters)){
+            setPasswordVal(true)
+        }
+        if(password.match(upperCaseLetters)){
+            setPasswordVal(true)
+        }
+        if(password.match(numbers)){
+            setPasswordVal(true)
+        }
+        if(password.length >= 8){
+            setPasswordVal(true)
+        }
+        if(format.test(password)){
+            setPasswordVal(true)
+        }
+        else{
+            setPasswordVal(false);
+        }
+    }
 
    return (
       <ScrollView style = {styles.whole}>
@@ -88,11 +114,12 @@ const Register1 = (props) => {
                   selectionColor='#4FB0F5'
                   secureTextEntry={eye?true:false}
                   onChangeText={password => setPassword(password)}
+                  onBlur={passwordCheck}
                />
-               <Text style={styles.error}>{password=="" && submit? "Please enter your password.":""}</Text>
+               <Text style={styles.error}>{password=="" && submit? "Please enter your password.":!passwordVal?"Password should have minimum 8 characters, 1 upper case, 1 lower case, 1 special character and 1 number":""}</Text>
                <TouchableOpacity
                   onPress={()=>setEye(!eye)}
-                  style={styles.touch}
+                  style={!passwordVal&&password!=""?styles.touch_error:styles.touch}
                >
                   {eye?
                      <Image 
@@ -268,6 +295,13 @@ const styles = StyleSheet.create ({
         alignSelf: 'flex-end',
         position: "relative",
         top: -50
+    },
+    touch_error:{
+        height:50,
+        width: 50,
+        alignSelf: 'flex-end',
+        position: "relative",
+        top: -63
     },
     error: {
         color: "red"

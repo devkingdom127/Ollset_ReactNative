@@ -4,6 +4,7 @@ import { Actions } from 'react-native-router-flux'
 import Header from '../Auth/header'
 import { Chip } from 'react-native-paper';
 import { AuthenticationService } from "../server/auth.service";
+import RemovableChips from 'react-native-chip/RemovableChips'
 
 const Invite = () => {
    const authService = new AuthenticationService();
@@ -13,13 +14,12 @@ const Invite = () => {
             <Header />
             <View style={styles.invite_input}>
                <Text style={styles.invite_head}>Invite people</Text>
-               <Chip 
-                  icon="information" 
-                  onPress={() => console.log('Pressed')}
-                  selected={true}
-               >
-                  Example Chip
-               </Chip>
+               <View style={styles.emalInvite}>
+                  <RemovableChips 
+                     label="E-mails" 
+                     onChangeChips={(chips) => console.log(chips)}
+                  />
+               </View>
                <TouchableOpacity
                   style={styles.invitebtn}
                >
@@ -49,30 +49,8 @@ const styles = StyleSheet.create ({
       color: "#474453",
       marginTop: 12
    },
-   email: {
-      borderWidth: 1,
-      borderColor: "#EAEAEA",
-      borderStyle: "solid",
-      backgroundColor: "#fff",
-      borderRadius: 12,
-      borderTopLeftRadius: 12,
-      borderTopRightRadius: 12,
-      marginTop: 24,
-      height: 48
-   },
-   email_error: {
-      borderWidth: 1,
-      borderColor: "red",
-      borderStyle: "solid",
-      backgroundColor: "#fff",
-      borderRadius: 12,
-      borderTopLeftRadius: 12,
-      borderTopRightRadius: 12,
-      marginTop: 24,
-      height: 48
-   },
    invitebtn: {
-      marginTop: 5,
+      marginTop: 24,
       height: 48,
       alignItems: "center",
       backgroundColor: "#4FB0F5",
@@ -84,4 +62,13 @@ const styles = StyleSheet.create ({
       fontSize: 14,
       fontWeight: "700"
    },
+   emalInvite: {
+      borderWidth: 1,
+      borderColor: "#EAEAEA",
+      borderRadius: 12,
+      paddingLeft: 16,
+      paddingBottom: 10,
+      paddingRight: 10,
+      marginTop: 24
+   }
 })

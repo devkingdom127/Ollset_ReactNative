@@ -37,6 +37,7 @@ const VerifyUser = (props) => {
             setTimeout(function(){Actions.login()}, 4000);            
          }).catch((err) => {
             console.log(err);
+            Alert.alert("Error! Please check your verification code.");
          });
       }
    }
